@@ -1,0 +1,11 @@
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+.banner .background {
+  background-image: url("../assets/Images/carBanner1.jpg");
+  height: 500px;
+  background-size: cover;
+}
+/*# sourceMappingURL=indexstyle.css.map */
