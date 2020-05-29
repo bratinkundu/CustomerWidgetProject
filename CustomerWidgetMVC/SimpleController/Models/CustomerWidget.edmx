@@ -1,0 +1,606 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="CustomerWidgetModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Appointment">
+          <Key>
+            <PropertyRef Name="AppointmentId" />
+          </Key>
+          <Property Name="AppointmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="CarId" Type="int" Nullable="false" />
+          <Property Name="DealerServiceId" Type="int" Nullable="false" />
+          <Property Name="DateOfBooking" Type="date" Nullable="false" />
+          <Property Name="SlotTime" Type="time" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Car">
+          <Key>
+            <PropertyRef Name="CarId" />
+          </Key>
+          <Property Name="CarId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RegistrationNo" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="BrandName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Model" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="ContactNo" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CustomerCars">
+          <Key>
+            <PropertyRef Name="CustomerCarId" />
+          </Key>
+          <Property Name="CustomerCarId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="CarId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Dealer">
+          <Key>
+            <PropertyRef Name="DealerId" />
+          </Key>
+          <Property Name="DealerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DealerName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="ContactNo" Type="bigint" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="City" Type="varchar" MaxLength="30" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DealerServicePackage">
+          <Key>
+            <PropertyRef Name="DealerServiceId" />
+          </Key>
+          <Property Name="DealerServiceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ServiceId" Type="int" Nullable="false" />
+          <Property Name="DealerId" Type="int" Nullable="false" />
+          <Property Name="Price" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ServicePackage">
+          <Key>
+            <PropertyRef Name="ServiceId" />
+          </Key>
+          <Property Name="ServiceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ServiceName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Slot">
+          <Key>
+            <PropertyRef Name="DealerId" />
+            <PropertyRef Name="Date" />
+            <PropertyRef Name="SlotTime" />
+          </Key>
+          <Property Name="DealerId" Type="int" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="SlotTime" Type="time" Precision="7" Nullable="false" />
+          <Property Name="SlotAvailable" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <Association Name="FK__Appointme__CarId__59FA5E80">
+          <End Role="Car" Type="Self.Car" Multiplicity="1" />
+          <End Role="Appointment" Type="Self.Appointment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Car">
+              <PropertyRef Name="CarId" />
+            </Principal>
+            <Dependent Role="Appointment">
+              <PropertyRef Name="CarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Appointme__Custo__59063A47">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="Appointment" Type="Self.Appointment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="Appointment">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Appointme__Deale__339FAB6E">
+          <End Role="DealerServicePackage" Type="Self.DealerServicePackage" Multiplicity="1" />
+          <End Role="Appointment" Type="Self.Appointment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DealerServicePackage">
+              <PropertyRef Name="DealerServiceId" />
+            </Principal>
+            <Dependent Role="Appointment">
+              <PropertyRef Name="DealerServiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__CustomerC__CarId__4F7CD00D">
+          <End Role="Car" Type="Self.Car" Multiplicity="1" />
+          <End Role="CustomerCars" Type="Self.CustomerCars" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Car">
+              <PropertyRef Name="CarId" />
+            </Principal>
+            <Dependent Role="CustomerCars">
+              <PropertyRef Name="CarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__CustomerC__Custo__5070F446">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="CustomerCars" Type="Self.CustomerCars" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="CustomerCars">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__DealerSer__Deale__2DE6D218">
+          <End Role="Dealer" Type="Self.Dealer" Multiplicity="1" />
+          <End Role="DealerServicePackage" Type="Self.DealerServicePackage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dealer">
+              <PropertyRef Name="DealerId" />
+            </Principal>
+            <Dependent Role="DealerServicePackage">
+              <PropertyRef Name="DealerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__DealerSer__Servi__2CF2ADDF">
+          <End Role="ServicePackage" Type="Self.ServicePackage" Multiplicity="1" />
+          <End Role="DealerServicePackage" Type="Self.DealerServicePackage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ServicePackage">
+              <PropertyRef Name="ServiceId" />
+            </Principal>
+            <Dependent Role="DealerServicePackage">
+              <PropertyRef Name="ServiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Slot__DealerId__5CD6CB2B">
+          <End Role="Dealer" Type="Self.Dealer" Multiplicity="1" />
+          <End Role="Slot" Type="Self.Slot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dealer">
+              <PropertyRef Name="DealerId" />
+            </Principal>
+            <Dependent Role="Slot">
+              <PropertyRef Name="DealerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CustomerWidgetModelStoreContainer">
+          <EntitySet Name="Appointment" EntityType="Self.Appointment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Car" EntityType="Self.Car" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CustomerCars" EntityType="Self.CustomerCars" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Dealer" EntityType="Self.Dealer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DealerServicePackage" EntityType="Self.DealerServicePackage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ServicePackage" EntityType="Self.ServicePackage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Slot" EntityType="Self.Slot" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Appointme__CarId__59FA5E80" Association="Self.FK__Appointme__CarId__59FA5E80">
+            <End Role="Car" EntitySet="Car" />
+            <End Role="Appointment" EntitySet="Appointment" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Appointme__Custo__59063A47" Association="Self.FK__Appointme__Custo__59063A47">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="Appointment" EntitySet="Appointment" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Appointme__Deale__339FAB6E" Association="Self.FK__Appointme__Deale__339FAB6E">
+            <End Role="DealerServicePackage" EntitySet="DealerServicePackage" />
+            <End Role="Appointment" EntitySet="Appointment" />
+          </AssociationSet>
+          <AssociationSet Name="FK__CustomerC__CarId__4F7CD00D" Association="Self.FK__CustomerC__CarId__4F7CD00D">
+            <End Role="Car" EntitySet="Car" />
+            <End Role="CustomerCars" EntitySet="CustomerCars" />
+          </AssociationSet>
+          <AssociationSet Name="FK__CustomerC__Custo__5070F446" Association="Self.FK__CustomerC__Custo__5070F446">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="CustomerCars" EntitySet="CustomerCars" />
+          </AssociationSet>
+          <AssociationSet Name="FK__DealerSer__Deale__2DE6D218" Association="Self.FK__DealerSer__Deale__2DE6D218">
+            <End Role="Dealer" EntitySet="Dealer" />
+            <End Role="DealerServicePackage" EntitySet="DealerServicePackage" />
+          </AssociationSet>
+          <AssociationSet Name="FK__DealerSer__Servi__2CF2ADDF" Association="Self.FK__DealerSer__Servi__2CF2ADDF">
+            <End Role="ServicePackage" EntitySet="ServicePackage" />
+            <End Role="DealerServicePackage" EntitySet="DealerServicePackage" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Slot__DealerId__5CD6CB2B" Association="Self.FK__Slot__DealerId__5CD6CB2B">
+            <End Role="Dealer" EntitySet="Dealer" />
+            <End Role="Slot" EntitySet="Slot" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CustomerWidgetModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Appointment">
+          <Key>
+            <PropertyRef Name="AppointmentId" />
+          </Key>
+          <Property Name="AppointmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="CarId" Type="Int32" Nullable="false" />
+          <Property Name="DealerServiceId" Type="Int32" Nullable="false" />
+          <Property Name="DateOfBooking" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="SlotTime" Type="Time" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Car" Relationship="Self.FK__Appointme__CarId__59FA5E80" FromRole="Appointment" ToRole="Car" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK__Appointme__Custo__59063A47" FromRole="Appointment" ToRole="Customer" />
+          <NavigationProperty Name="DealerServicePackage" Relationship="Self.FK__Appointme__Deale__339FAB6E" FromRole="Appointment" ToRole="DealerServicePackage" />
+        </EntityType>
+        <EntityType Name="Car">
+          <Key>
+            <PropertyRef Name="CarId" />
+          </Key>
+          <Property Name="CarId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RegistrationNo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BrandName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Model" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Appointments" Relationship="Self.FK__Appointme__CarId__59FA5E80" FromRole="Car" ToRole="Appointment" />
+          <NavigationProperty Name="CustomerCars" Relationship="Self.FK__CustomerC__CarId__4F7CD00D" FromRole="Car" ToRole="CustomerCars" />
+        </EntityType>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ContactNo" Type="Int64" Nullable="false" />
+          <NavigationProperty Name="Appointments" Relationship="Self.FK__Appointme__Custo__59063A47" FromRole="Customer" ToRole="Appointment" />
+          <NavigationProperty Name="CustomerCars" Relationship="Self.FK__CustomerC__Custo__5070F446" FromRole="Customer" ToRole="CustomerCars" />
+        </EntityType>
+        <EntityType Name="CustomerCar">
+          <Key>
+            <PropertyRef Name="CustomerCarId" />
+          </Key>
+          <Property Name="CustomerCarId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="CarId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Car" Relationship="Self.FK__CustomerC__CarId__4F7CD00D" FromRole="CustomerCars" ToRole="Car" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK__CustomerC__Custo__5070F446" FromRole="CustomerCars" ToRole="Customer" />
+        </EntityType>
+        <EntityType Name="Dealer">
+          <Key>
+            <PropertyRef Name="DealerId" />
+          </Key>
+          <Property Name="DealerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DealerName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ContactNo" Type="Int64" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="City" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="DealerServicePackages" Relationship="Self.FK__DealerSer__Deale__2DE6D218" FromRole="Dealer" ToRole="DealerServicePackage" />
+          <NavigationProperty Name="Slots" Relationship="Self.FK__Slot__DealerId__5CD6CB2B" FromRole="Dealer" ToRole="Slot" />
+        </EntityType>
+        <EntityType Name="DealerServicePackage">
+          <Key>
+            <PropertyRef Name="DealerServiceId" />
+          </Key>
+          <Property Name="DealerServiceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ServiceId" Type="Int32" Nullable="false" />
+          <Property Name="DealerId" Type="Int32" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Appointments" Relationship="Self.FK__Appointme__Deale__339FAB6E" FromRole="DealerServicePackage" ToRole="Appointment" />
+          <NavigationProperty Name="Dealer" Relationship="Self.FK__DealerSer__Deale__2DE6D218" FromRole="DealerServicePackage" ToRole="Dealer" />
+          <NavigationProperty Name="ServicePackage" Relationship="Self.FK__DealerSer__Servi__2CF2ADDF" FromRole="DealerServicePackage" ToRole="ServicePackage" />
+        </EntityType>
+        <EntityType Name="ServicePackage">
+          <Key>
+            <PropertyRef Name="ServiceId" />
+          </Key>
+          <Property Name="ServiceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ServiceName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="DealerServicePackages" Relationship="Self.FK__DealerSer__Servi__2CF2ADDF" FromRole="ServicePackage" ToRole="DealerServicePackage" />
+        </EntityType>
+        <EntityType Name="Slot">
+          <Key>
+            <PropertyRef Name="DealerId" />
+            <PropertyRef Name="Date" />
+            <PropertyRef Name="SlotTime" />
+          </Key>
+          <Property Name="DealerId" Type="Int32" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="SlotTime" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="SlotAvailable" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Dealer" Relationship="Self.FK__Slot__DealerId__5CD6CB2B" FromRole="Slot" ToRole="Dealer" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <Association Name="FK__Appointme__CarId__59FA5E80">
+          <End Role="Car" Type="Self.Car" Multiplicity="1" />
+          <End Role="Appointment" Type="Self.Appointment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Car">
+              <PropertyRef Name="CarId" />
+            </Principal>
+            <Dependent Role="Appointment">
+              <PropertyRef Name="CarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Appointme__Custo__59063A47">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="Appointment" Type="Self.Appointment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="Appointment">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Appointme__Deale__339FAB6E">
+          <End Role="DealerServicePackage" Type="Self.DealerServicePackage" Multiplicity="1" />
+          <End Role="Appointment" Type="Self.Appointment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DealerServicePackage">
+              <PropertyRef Name="DealerServiceId" />
+            </Principal>
+            <Dependent Role="Appointment">
+              <PropertyRef Name="DealerServiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__CustomerC__CarId__4F7CD00D">
+          <End Role="Car" Type="Self.Car" Multiplicity="1" />
+          <End Role="CustomerCars" Type="Self.CustomerCar" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Car">
+              <PropertyRef Name="CarId" />
+            </Principal>
+            <Dependent Role="CustomerCars">
+              <PropertyRef Name="CarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__CustomerC__Custo__5070F446">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="CustomerCars" Type="Self.CustomerCar" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="CustomerCars">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__DealerSer__Deale__2DE6D218">
+          <End Role="Dealer" Type="Self.Dealer" Multiplicity="1" />
+          <End Role="DealerServicePackage" Type="Self.DealerServicePackage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dealer">
+              <PropertyRef Name="DealerId" />
+            </Principal>
+            <Dependent Role="DealerServicePackage">
+              <PropertyRef Name="DealerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Slot__DealerId__5CD6CB2B">
+          <End Role="Dealer" Type="Self.Dealer" Multiplicity="1" />
+          <End Role="Slot" Type="Self.Slot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dealer">
+              <PropertyRef Name="DealerId" />
+            </Principal>
+            <Dependent Role="Slot">
+              <PropertyRef Name="DealerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__DealerSer__Servi__2CF2ADDF">
+          <End Role="ServicePackage" Type="Self.ServicePackage" Multiplicity="1" />
+          <End Role="DealerServicePackage" Type="Self.DealerServicePackage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ServicePackage">
+              <PropertyRef Name="ServiceId" />
+            </Principal>
+            <Dependent Role="DealerServicePackage">
+              <PropertyRef Name="ServiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CustomerWidgetEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Appointments" EntityType="Self.Appointment" />
+          <EntitySet Name="Cars" EntityType="Self.Car" />
+          <EntitySet Name="Customers" EntityType="Self.Customer" />
+          <EntitySet Name="CustomerCars" EntityType="Self.CustomerCar" />
+          <EntitySet Name="Dealers" EntityType="Self.Dealer" />
+          <EntitySet Name="DealerServicePackages" EntityType="Self.DealerServicePackage" />
+          <EntitySet Name="ServicePackages" EntityType="Self.ServicePackage" />
+          <EntitySet Name="Slots" EntityType="Self.Slot" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+          <AssociationSet Name="FK__Appointme__CarId__59FA5E80" Association="Self.FK__Appointme__CarId__59FA5E80">
+            <End Role="Car" EntitySet="Cars" />
+            <End Role="Appointment" EntitySet="Appointments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Appointme__Custo__59063A47" Association="Self.FK__Appointme__Custo__59063A47">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Appointment" EntitySet="Appointments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Appointme__Deale__339FAB6E" Association="Self.FK__Appointme__Deale__339FAB6E">
+            <End Role="DealerServicePackage" EntitySet="DealerServicePackages" />
+            <End Role="Appointment" EntitySet="Appointments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__CustomerC__CarId__4F7CD00D" Association="Self.FK__CustomerC__CarId__4F7CD00D">
+            <End Role="Car" EntitySet="Cars" />
+            <End Role="CustomerCars" EntitySet="CustomerCars" />
+          </AssociationSet>
+          <AssociationSet Name="FK__CustomerC__Custo__5070F446" Association="Self.FK__CustomerC__Custo__5070F446">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="CustomerCars" EntitySet="CustomerCars" />
+          </AssociationSet>
+          <AssociationSet Name="FK__DealerSer__Deale__2DE6D218" Association="Self.FK__DealerSer__Deale__2DE6D218">
+            <End Role="Dealer" EntitySet="Dealers" />
+            <End Role="DealerServicePackage" EntitySet="DealerServicePackages" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Slot__DealerId__5CD6CB2B" Association="Self.FK__Slot__DealerId__5CD6CB2B">
+            <End Role="Dealer" EntitySet="Dealers" />
+            <End Role="Slot" EntitySet="Slots" />
+          </AssociationSet>
+          <AssociationSet Name="FK__DealerSer__Servi__2CF2ADDF" Association="Self.FK__DealerSer__Servi__2CF2ADDF">
+            <End Role="ServicePackage" EntitySet="ServicePackages" />
+            <End Role="DealerServicePackage" EntitySet="DealerServicePackages" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CustomerWidgetModelStoreContainer" CdmEntityContainer="CustomerWidgetEntities">
+          <EntitySetMapping Name="Appointments">
+            <EntityTypeMapping TypeName="CustomerWidgetModel.Appointment">
+              <MappingFragment StoreEntitySet="Appointment">
+                <ScalarProperty Name="AppointmentId" ColumnName="AppointmentId" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="CarId" ColumnName="CarId" />
+                <ScalarProperty Name="DealerServiceId" ColumnName="DealerServiceId" />
+                <ScalarProperty Name="DateOfBooking" ColumnName="DateOfBooking" />
+                <ScalarProperty Name="SlotTime" ColumnName="SlotTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Cars">
+            <EntityTypeMapping TypeName="CustomerWidgetModel.Car">
+              <MappingFragment StoreEntitySet="Car">
+                <ScalarProperty Name="CarId" ColumnName="CarId" />
+                <ScalarProperty Name="RegistrationNo" ColumnName="RegistrationNo" />
+                <ScalarProperty Name="BrandName" ColumnName="BrandName" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Customers">
+            <EntityTypeMapping TypeName="CustomerWidgetModel.Customer">
+              <MappingFragment StoreEntitySet="Customer">
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomerCars">
+            <EntityTypeMapping TypeName="CustomerWidgetModel.CustomerCar">
+              <MappingFragment StoreEntitySet="CustomerCars">
+                <ScalarProperty Name="CustomerCarId" ColumnName="CustomerCarId" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="CarId" ColumnName="CarId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Dealers">
+            <EntityTypeMapping TypeName="CustomerWidgetModel.Dealer">
+              <MappingFragment StoreEntitySet="Dealer">
+                <ScalarProperty Name="DealerId" ColumnName="DealerId" />
+                <ScalarProperty Name="DealerName" ColumnName="DealerName" />
+                <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="City" ColumnName="City" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DealerServicePackages">
+            <EntityTypeMapping TypeName="CustomerWidgetModel.DealerServicePackage">
+              <MappingFragment StoreEntitySet="DealerServicePackage">
+                <ScalarProperty Name="DealerServiceId" ColumnName="DealerServiceId" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="DealerId" ColumnName="DealerId" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ServicePackages">
+            <EntityTypeMapping TypeName="CustomerWidgetModel.ServicePackage">
+              <MappingFragment StoreEntitySet="ServicePackage">
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Slots">
+            <EntityTypeMapping TypeName="CustomerWidgetModel.Slot">
+              <MappingFragment StoreEntitySet="Slot">
+                <ScalarProperty Name="DealerId" ColumnName="DealerId" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="SlotTime" ColumnName="SlotTime" />
+                <ScalarProperty Name="SlotAvailable" ColumnName="SlotAvailable" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="CustomerWidgetModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

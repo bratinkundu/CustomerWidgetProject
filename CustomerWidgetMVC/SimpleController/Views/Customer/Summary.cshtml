@@ -1,0 +1,332 @@
+@model SimpleController.Models.Appointment
+
+@{
+    ViewBag.Title = "Summary";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="~/Content/jquery.alerts.css" rel="stylesheet" type="text/css" media="screen" />
+</head>
+<body>
+    <h2 class="mb-5 text-center mt-4">Please confirm your Booking</h2>
+    <div class="container">
+        <form class="d-flex  flex-column">
+            <div class="row ">
+                <div class="col-md-6">
+                    <div class="form-group col-md-10">
+                        <b> <span>Name: </span></b>
+                        <label id="inputName"></label>
+                    </div>
+                    <div class="form-group col-md-10">
+                        <b> <span>Car: </span></b>
+
+                        <label id="inputCar"></label>
+                    </div>
+                    <div class="form-group col-md-10  d-flex ">
+                        <b>  <span>Dealer: &nbsp;</span></b>
+                        <label id="inputDealer"></label>
+                    </div>
+                    <div class="form-group col-md-11 d-flex align-items-start">
+                        <b>  <span class="col-5 p-0">Service Package: &nbsp;</span></b>
+                        <label class="col-7 p-0" id="servicepackage"></label>
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group col-md-10">
+
+                        <b> <span>Cost: </span></b>
+                        <label id="inputPrice"></label>
+                    </div>
+                    <div class="form-group col-md-10">
+                        <b> <span>Booking Date: </span></b>
+                        <label id="inputDate"> </label>
+                    </div>
+                    <div class="form-group col-md-10">
+                        <b><span>Booking Time: </span> </b>
+                        <label id="inputTime"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <button type="button" class="btn btn-primary" onclick="confirm()">Confirm</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
+
+@{
+    var queryString = Request.QueryString["time"];
+    Session["slotTime"] = queryString;
+    var query = Request.QueryString["date"];
+    Session["slotDate"] = query;
+
+}
+
+<script src="~/Scripts/moment.js"></script>
+
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="~/Scripts/bootstrap.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Scripts/jquery.alerts.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+        $(document).ready(function () {
+
+            var da = "@Session["slotDate"]";
+            //console.log(da);
+            var dateObject = da.split("-");
+
+            var date = dateObject[2];
+            var month = (dateObject[1]);
+            var year = dateObject[0];
+
+            datetime = (date + "/" + month + "/" + year);
+            var time = "@Session["slotTime"]".slice(0, 5);
+            
+        $.ajax({
+          url: 'http://localhost:59699/api/GetAppointmentDetails/',
+          type: 'GET',
+          data: {DealerId: @Session["dealerid"], CarId: @Session["carid"], PackageId: @Session["packageId"] },
+          // contentType: "application/text; charset=utf-8",
+          dataType: 'json',
+            success: function (data)
+            {
+            console.log("............" + data + "...............");
+                var Data = data;
+                document.getElementById('inputName').innerHTML = Data[0].FirstName + ' ' + Data[0].LastName;
+                document.getElementById('inputCar').innerHTML = Data[0].RegistrationNo + ' ' + Data[0].Model + ' ' + Data[0].BrandName;
+                document.getElementById('inputDealer').innerHTML = Data[1].DealerName+', '+Data[1].Address+', '+Data[1].City;
+                document.getElementById('servicepackage').innerHTML = Data[1].ServiceName + ' ' + Data[1].Description;
+                document.getElementById('inputDate').innerHTML = datetime;
+                document.getElementById('inputPrice').innerHTML = Data[1].Price;
+                document.getElementById('inputTime').innerHTML = time;
+           }
+
+
+        });
+
+      });
+
+    function confirm()
+    {
+        console.log("in confirm");
+        console.log(typeof(@Session["CustomerId"]));
+        console.log(typeof(@Session["dealerid"]));
+        console.log(typeof(@Session["carid"]));
+        console.log(typeof(@Session["packageId"]));
+        console.log(typeof(@Session["slotDate"]));
+        console.log(typeof ("@Session["slotTime"]"));
+
+
+
+        var obj = {
+            customerId: @Session["CustomerId"],
+            DealerId: @Session["dealerid"],
+            CarId: @Session["carid"],
+            PackageId: @Session["packageId"],
+            dateOfbooking: "@Session["slotDate"]",
+            slotTime: "@Session["slotTime"]"
+        }
+        $.ajax({
+            url: 'http://localhost:59699/api/Summary/PostSummary',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify(obj),
+            dataType:'json',
+
+
+            success: function (data) {
+                console.log(data);
+              
+        window.location.href = "/Customer/Confirm";
+            },
+
+
+            error: function (jqXHR, textStatus, errorThrown) {
+
+                
+                jAlert(JSON.parse(jqXHR.responseText), "Alert!", function () {
+                    window.location.href = "/Customer/CarList"; 
+                });
+                
+        }
+        });
+    };
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*@model SimpleController.Models.Appointment
+
+    @{
+        ViewBag.Title = "Summary";
+    }
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    </head>
+    <body>
+        <h2 class="mb-5 text-center mt-4">Please confirm your Booking</h2>
+        <div class="container">
+            <form class="d-flex  flex-column">
+                <div class="row ">
+                    <div class="col-md-6">
+                        <div class="form-group col-md-10">
+                            <b> <span>Name: </span></b>
+                            <label id="inputName"></label>
+                        </div>
+                        <div class="form-group col-md-10">
+                            <b> <span>Car: </span></b>
+                            <label id="inputCar"></label>
+                        </div>
+
+                        <div class="form-group col-md-10  d-flex ">
+                            <b>  <span>Dealer: &nbsp;</span></b>
+                            <label id="inputDealer"></label>
+                        </div>
+                        <div class="form-group col-md-11 d-flex align-items-start">
+                            <b>  <span class="col-5 p-0">Service Package: &nbsp;</span></b>
+                            <label class="col-7 p-0" id="servicepackage"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group col-md-10">
+
+                            <b> <span>Cost: </span></b>
+                            <label id="inputPrice"></label>
+                        </div>
+                        <div class="form-group col-md-10">
+                            <b> <span>Booking Date: </span></b>
+                            <label id="inputDate"> </label>
+                        </div>
+                        <div class="form-group col-md-10">
+                            <b><span>Booking Time: </span> </b>
+                            <label id="inputTime"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <button type="button" class="btn btn-primary" onclick="confirm()">Confirm</button>
+                </div>
+            </form>
+        </div>
+
+    </body>
+    </html>
+
+    @{
+        var queryString = Request.QueryString["time"];
+        Session["slotTime"] = queryString;
+        var query = Request.QueryString["date"];
+        Session["slotDate"] = query;
+
+    }
+
+    <script src="~/Scripts/moment.js"></script>
+
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $.ajax({
+          url: 'http://localhost:59699/api/Summary/',
+          type: 'GET',
+          data: {DealerId: @Session["dealerid"], CarId: @Session["carid"], PackageId: @Session["packageId"] },
+          // contentType: "application/text; charset=utf-8",
+          dataType: 'json',
+            success: function (data)
+            {
+            console.log("............" + data + "...............");
+                var Data = JSON.parse(data);
+                document.getElementById('inputName').innerHTML = Data[0].FirstName + ' ' + Data[0].LastName;
+                document.getElementById('inputCar').innerHTML = Data[0].RegistrationNo + ' ' + Data[0].Model + ' ' + Data[0].BrandName;
+                document.getElementById('inputDealer').innerHTML = Data[1].DealerName+', '+Data[1].Address+', '+Data[1].City;
+                document.getElementById('servicepackage').innerHTML = Data[1].ServiceName + ' ' + Data[1].Description;
+                document.getElementById('inputDate').innerHTML = "@Session["slotDate"]";
+                document.getElementById('inputPrice').innerHTML = Data[1].Price;
+                 document.getElementById('inputTime').innerHTML = "@Session["slotTime"]";
+           }
+
+
+        });
+
+      });
+
+    function confirm()
+    {
+        console.log("in confirm");
+        console.log(typeof(@Session["CustomerId"]));
+        console.log(typeof(@Session["dealerid"]));
+        console.log(typeof(@Session["carid"]));
+        console.log(typeof(@Session["packageId"]));
+        console.log(typeof(@Session["slotDate"]));
+        console.log(typeof ("@Session["slotTime"]"));
+
+
+
+        var obj = {
+            customerId: @Session["CustomerId"],
+            DealerId: @Session["dealerid"],
+            CarId: @Session["carid"],
+            PackageId: @Session["packageId"],
+            dateOfbooking: "@Session["slotDate"]",
+            slotTime: "@Session["slotTime"]"
+        }
+        $.ajax({
+            url: 'http://localhost:59699/api/Summary/',
+            type: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify(obj),
+            dataType:'json',
+
+
+            success: function (data) {
+            console.log(data);
+            window.location.href = "/Customer/Confirm";
+            },
+
+
+            error: function (jqXHR, textStatus, errorThrown) {
+
+                     alert(JSON.parse(jqXHR.responseText));
+                     window.location.href = "/Customer/CarList";
+            }
+        });
+    };
+
+    </script>*@
+

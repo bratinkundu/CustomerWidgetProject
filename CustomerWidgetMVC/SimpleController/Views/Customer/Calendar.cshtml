@@ -1,0 +1,173 @@
+﻿    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <title>Select Time Slot</title>
+       
+        <link href='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/ui-lightness/jquery-ui.css' rel='stylesheet'>
+        @*<link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">*@
+    </head>
+    <body>
+
+        <h2 class="text-center mt-4" id="name"></h2>
+        <!-- HTML -->
+        <div class="mt-2">
+            <div id="datepicker-1" class="d-flex justify-content-center"></div>
+        </div>
+
+
+        <div id="tableView" class="mt-5 ml-5 mr-5">
+
+        </div>
+        <!-- JS Imports -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        @*<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>*@
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script>var $j = jQuery.noConflict();</script>
+
+        @{
+            var queryString = Request.QueryString["dealerid"];
+            Session["dealerid"] = queryString;
+        }
+        <!-- Javascript -->
+
+        <script>
+            $j(document).ready(function () {
+                var n = document.getElementById("name");
+            $j.ajax({
+                url: 'http://localhost:59699/api/Slots/PostSlot/?dealerId='+@Session["dealerid"],
+                type: 'POST',
+                // data: '{"id":' + DealerId + ',"date":' + date + '}',
+                      dataType: 'json',
+
+                success: function (data) {
+                    console.log(data);
+                    n.innerHTML = "Dealer Name:" + " "+data;
+                }
+            });
+          $j("#datepicker-1").datepicker({
+            dateFormat: "yy-mm-dd",
+            maxDate: '+1m',
+            minDate: 0,
+            firstDay: 1,
+            showAnim: 'slide',
+
+            beforeShowDay: function (date) {
+              if (date.getDay() == 0 || date.getDay() == 6) {
+                return [false];
+              }
+              else {
+                return [true];
+              }
+            },
+
+
+
+            onSelect: function (dateText, inst) {
+
+
+              var DealerId =@Session["dealerid"];
+              var  Date=$j(this).val();
+
+
+
+              $j.ajax({
+                url: 'http://localhost:59699/api/GetAvailableSlots/',
+                type: 'GET',
+               // data: '{"id":' + DealerId + ',"date":' + date + '}',
+                data: { id: DealerId, date: Date },
+
+                success: function (data) {
+                 // console.log(data);
+                    if (data.length == 0) {
+                        $j('#tableView').html('<h2 style="text-align:center">No slots available for selected Date!</h2>')
+                    }
+                    else {
+                        var slotdata = data;
+                        var index = 1;
+                        $j('#tableView').html('<table class="table table-striped ">' +
+                            '<p id="selectedDate"></p>' +
+                            '<thead>' +
+                            '<tr>' +
+                            '<th scope="col" style="width: 5%" ></th>' +
+                            '<th scope="col" style="width: 5%">Start Time</th>' +
+                            '<th scope="col"  style="text-align:right; width:10%">Available Slots</th>' +
+                            '<th scope="col" style="width: 10%"></th>'+
+                            '<th scope="col" style="width: 10%"></th>' +
+                            '</tr>' +
+                            '</thead>' +
+                            '<tbody id="slotdatas">' +
+                            '</tbody>' +
+                            '</table>');
+                        for (var i = 0; i < slotdata.length; i++) {
+                            var d = new window.Date(slotdata[i].Date);
+                            var date = (d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate());
+                            console.log(date)
+                            if (slotdata[i].SlotAvailable > 0) {
+
+                                  var time = slotdata[i].SlotTime + "";
+                                 time=time.slice(0, 5);
+                                $j('#slotdatas').append('<tr>' +
+                                    '<th scope="row" style="width: 5%">' + index + '</th>' +
+                                    '<td style="width: 5%">' + time + '</td>' +
+                                    '<td style="text-align:right; width:10%">' + slotdata[i].SlotAvailable + '</td>' +
+                                    '<th scope="col" style="width: 10%"></th>'+
+                                    '<td style="width: 10%"><button onclick="toPack(\'' + date + '\',\'' + slotdata[i].SlotTime + '\')" class="btn btn-primary">Book Now</button></td>' +
+                                    '</tr>'
+                                );
+                            }
+                            else {
+                                $j('#slotdatas').append('<tr>' +
+                                    '<th scope="row">' + index + '</th>' +
+                                    '<td>' + slotdata[i].SlotTime + '</td>' +
+                                    '<td>  No Slot Available  </td>' +
+                                    '<td><button onclick="toPack(\'' + date + '\',\'' + slotdata[i].SlotTime + '\')" class="btn btn-primary" disabled=true>Book Now</button></td>' +
+                                    '</tr>'
+                                );
+
+                            }
+                            index++;
+                        }
+
+                    }
+
+                },
+                error: function (data) {
+                  console.log(data);
+                }
+              });
+
+
+
+              $j('#selectedDate').html('Time slots for ' + dateText);
+              //Ajax Calls
+            }
+          });
+        });
+
+        function toPack(date,time) {
+          //var date = value.Date;
+          //var slotTime = value.SlotTime;
+          debugger;
+          console.log(time);
+          console.log(date);
+          //'<% '+Session["slotTime"]+' =' + time + ';%>'
+          //console.log('<%='+Session["slotTime"]+'%>')
+          //  alert('<%=Session["slotTime"]%>');
+      // window.location.href = "../Customer/Dealer?packageid=" + val + "&type=" + Pname;
+        window.location.href = "../Customer/Summary?time=" + time + "&date=" + date;
+        };
+        </script>
+
+    </body>
+    </html>
+
+
+
+
+
+

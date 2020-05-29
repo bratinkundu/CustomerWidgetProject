@@ -1,0 +1,208 @@
+﻿@model SimpleController.Models.Dealer
+
+    @{
+        ViewBag.Title = "Dealer";
+    }
+
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+      <link href="~/Content/dealer.css" rel="stylesheet" />
+      <title>Dealer List</title>
+    </head>
+    <body>
+
+
+
+      @{
+        var PackageId = Request.QueryString["packageid"];
+        var PackageName = Request.QueryString["type"];
+        Session["packageId"] = PackageId;
+        Session["packageName"] = PackageName;
+        //  @Url.Action("ActionName", "Controller",new { id=PackageId})
+
+      }
+      <h2 class="text-center mt-4">@Session["packageName"] Package</h2>
+      <div class="container mt-4">
+          <div class="d-flex justify-content-center">
+              <table id="dealerlist" class="table" style="width: 100%">
+                  <tr>
+                      <th style="width: 15%">Dealer Name</th>
+                      <th style="width: 10%; text-align:right">Contact</th>
+                      <th style="width: 24%">Address</th>
+                      <th style="width: 10%">City</th>
+                      <th style="width: 10%; text-align:right">Cost</th>
+                      <th style="width: 28%">Description</th>
+                      <th></th>
+                  </tr>
+              </table>
+          </div>
+      </div>
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+      <script type="text/javascript">
+        $(document).ready(function () {
+          $.ajax({
+
+            url: 'http://localhost:59699/api/GetDealerList?packageId=' +@PackageId,//+'packageName'+@PackageName,
+            type: 'GET',
+            dataType: 'json',
+
+            success: function (data, textStatus, xhr) {
+              var dealerData = data;
+              console.log(dealerData);
+
+              for (var i = 0; i < dealerData.length; i++) {
+                $('#dealerlist').append(
+                    '<tr id="dealerId">' +
+                '<td style="width: 20%">' + dealerData[i].DealerName + '</td>' +
+                '<td style="width: 10%">' + dealerData[i].ContactNo + '</td>' +
+                '<td style="width: 20%">' + dealerData[i].Address + '</td>' +
+                '<td style="width: 10%">' + dealerData[i].City + '</td>' +
+                '<td style="width: 10%; text-align:right">' + dealerData[i].Price + '</td>' +
+                '<td style="width: 22%">' + dealerData[i].Description + '</td>' +
+                '<td><button class="btn btn-primary" onclick="toPack(\'' + dealerData[i].DealerId + '\')" class="btn btn-primary">Select</button></td>' +
+              ' </tr>',)
+
+        };
+       //ar Did = document.getElementById('#dealerId').value;
+
+      },
+
+      error: function (error)
+      {
+      console.log(error);
+      alert(error);
+      }
+      })
+        });
+        function toPack(value) {
+
+        console.log(value + "......");
+         window.location.href = '/Customer/Calendar?dealerId='+value;
+        };
+
+      </script>
+      @{
+          //Session["DealerId"] = Did;
+        }
+    </body>
+    </html>
+
+
+
+
+
+
+
+
+
+
+
+@*@model SimpleController.Models.Dealer
+
+@{
+    ViewBag.Title = "Dealer";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link href="~/Content/dealer.css" rel="stylesheet" />
+    <title>Dealer List</title>
+</head>
+<body>
+
+
+
+    @{
+        var PackageId = Request.QueryString["packageid"];
+        var PackageName = Request.QueryString["type"];
+        Session["packageId"] = PackageId;
+        Session["packageName"] = PackageName;
+        //  @Url.Action("ActionName", "Controller",new { id=PackageId})
+
+    }
+    <h2 class="text-center mt-4">@Session["packageName"] Package</h2>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-center">
+            <table id="dealerlist" class="table" style="width: 100%">
+                <tr>
+                    <th style="width: 15%">Dealer Name</th>
+                    <th style="width: 10%">Contact</th>
+                    <th style="width: 24%">Address</th>
+                    <th style="width: 10%">City</th>
+                    <th style="width: 10%">Cost</th>
+                    <th style="width: 28%">Description</th>
+                    <th></th>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+      $.ajax({
+
+        url: 'http://localhost:59699/api/Dealer?packageId=' +@PackageId,//+'packageName'+@PackageName,
+        type: 'GET',
+        dataType: 'json',
+
+        success: function (data, textStatus, xhr) {
+          var dealerData = JSON.parse(data);
+          console.log(dealerData);
+
+          for (var i = 0; i < dealerData.length; i++) {
+            $('#dealerlist').append(
+              '<tr id="dealerId">' +
+                '<td style="width: 20%">' + dealerData[i].DealerName + '</td>' +
+                '<td style="width: 10%">' + dealerData[i].ContactNo + '</td>' +
+                '<td style="width: 20%">' + dealerData[i].Address + '</td>' +
+                '<td style="width: 10%">' + dealerData[i].City + '</td>' +
+                '<td style="width: 10%; text-align:right">' + dealerData[i].Price + '</td>' +
+                '<td style="width: 22%">' + dealerData[i].Description + '</td>' +
+                '<td><button class="btn btn-primary" onclick="toPack(\'' + dealerData[i].DealerId + '\')" class="btn btn-primary">Select</button></td>' +
+              ' </tr>',)
+
+    };
+   //ar Did = document.getElementById('#dealerId').value;
+
+  },
+
+  error: function (error)
+  {
+  console.log(error);
+  alert(error);
+  }
+  })
+    });
+    function toPack(value) {
+
+    console.log(value + "......");
+     window.location.href = '/Customer/Calendar?dealerId='+value;
+    };
+
+    </script>
+    @{
+        //Session["DealerId"] = Did;
+    }
+</body>
+</html>*@
+
