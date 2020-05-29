@@ -43,7 +43,7 @@
                 type: 'POST',
                 // data: '{"id":' + DealerId + ',"date":' + date + '}',
                       dataType: 'json',
-
+                        headers : { 'Authorization': `Bearer @Session["Token"]` },
                 success: function (data) {
                     console.log(data);
                     n.innerHTML = "Dealer Name:" + " "+data;
@@ -78,9 +78,9 @@
               $j.ajax({
                 url: 'http://localhost:59699/api/GetAvailableSlots/',
                 type: 'GET',
-               // data: '{"id":' + DealerId + ',"date":' + date + '}',
-                data: { id: DealerId, date: Date },
-
+               // data: '{"DealerId":' + DealerId + ',"BookingDate":' + date + '}',
+                data: { DealerId: DealerId, BookingDate: Date },
+                  headers : { 'Authorization': `Bearer @Session["Token"]` },
                 success: function (data) {
                  // console.log(data);
                     if (data.length == 0) {

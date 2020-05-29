@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Owin.Cors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -13,8 +14,10 @@ namespace CustomerWidgetMVC
             // Web API routes
 
             config.MapHttpAttributeRoutes();
-            var cors = new EnableCorsAttribute("*", "*", "*");
-            config.EnableCors(cors);
+            var cors = new EnableCorsAttribute("*", "*", "*", "Authorization");
+           config.EnableCors(cors);
+        
+
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",

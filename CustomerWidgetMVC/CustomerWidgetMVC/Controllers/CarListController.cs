@@ -6,6 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -21,33 +22,44 @@ namespace CustomerWidgetMVC.Controllers
         private CustomerWidgetEntities db = new CustomerWidgetEntities();
 
         // GET: api/CarList
-        [System.Web.Mvc.HttpGet]
+        [System.Web.Http.Authorize]
+        [System.Web.Http.HttpPost]
         [System.Web.Http.Route("api/GetCarList")]
-        public IHttpActionResult GetCars(int CustomerId)
+        public IHttpActionResult GetCars(CarDetails customerEmail)
         {
-            var carlist = (from car in db.Cars
-                           join customercar in db.CustomerCars on car.CarId equals customercar.CarId
-                           join customer in db.Customers on customercar.CustomerId equals customer.CustomerId
-                           where customercar.CustomerId == CustomerId
-                           select new
-                           {
-                               car.CarId,
-                               car.RegistrationNo,
-                               car.Model,
-                               car.BrandName
-                           }).ToList();
-            //var itemObject = JsonConvert.SerializeObject(carlist,
-            //       Formatting.None,
-            //       new JsonSerializerSettings()
-            //       {
-            //           ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            //       });
-            return Content(HttpStatusCode.OK, carlist);
+
+            var identity = (ClaimsIdentity)User.Identity;
+            var name = identity.Name;
+            if (name.Equals(customerEmail.Email, StringComparison.InvariantCultureIgnoreCase))
+            {
+                var CustomerId = (from customer in db.Customers
+                                  where customer.Email == name
+                                  select customer.CustomerId).Single();
+                var carlist = (from car in db.Cars
+                               join customercar in db.CustomerCars on car.CarId equals customercar.CarId
+                               join customer in db.Customers on customercar.CustomerId equals customer.CustomerId
+                               where customercar.CustomerId == CustomerId
+                               select new
+                               {
+                                   car.CarId,
+                                   car.RegistrationNo,
+                                   car.Model,
+                                   car.BrandName
+                               }).ToList();
+                //var itemObject = JsonConvert.SerializeObject(carlist,
+                //       Formatting.None,
+                //       new JsonSerializerSettings()
+                //       {
+                //           ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                //       });
+                return Content(HttpStatusCode.OK, carlist);
+            }
+            return Content(HttpStatusCode.BadRequest,"You are not authorized!");
         }
 
         // GET: api/CarList/5
         [ResponseType(typeof(Car))]
-      
+        [System.Web.Http.Authorize]
         public IHttpActionResult GetCar(int id)
         {
             Car car = db.Cars.Find(id);
@@ -92,7 +104,7 @@ namespace CustomerWidgetMVC.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
+        [System.Web.Http.Authorize]
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("api/RegisterCar/")]
         // POST: api/CarList
@@ -111,23 +123,32 @@ namespace CustomerWidgetMVC.Controllers
             }
             else
             {
-                Car car = new Car();
+                var identity = (ClaimsIdentity)User.Identity;
+                var name = identity.Name;
+                if (name.Equals(cardetails.Email, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Car car = new Car();
 
-                car.RegistrationNo = cardetails.RegistrationNo;
-                car.BrandName = cardetails.BrandName;
-                car.Model = cardetails.Model;
-                db.Cars.Add(car);
+                    car.RegistrationNo = cardetails.RegistrationNo;
+                    car.BrandName = cardetails.BrandName;
+                    car.Model = cardetails.Model;
+                    db.Cars.Add(car);
 
-                var id = from c in db.Customers where c.Email == cardetails.Email select c.CustomerId;
+                    var id = from c in db.Customers where c.Email == cardetails.Email select c.CustomerId;
 
-                CustomerCar customerCar = new CustomerCar();
-                customerCar.CarId = car.CarId;
-                customerCar.CustomerId = id.First();
-                db.CustomerCars.Add(customerCar);
-                db.SaveChanges();
-                // var session = HttpContext.Current.Session;
-                // session["CustomerCarId"] = customerCar.CarId;
-                return Ok(true);
+                    CustomerCar customerCar = new CustomerCar();
+                    customerCar.CarId = car.CarId;
+                    customerCar.CustomerId = id.First();
+                    db.CustomerCars.Add(customerCar);
+                    db.SaveChanges();
+                    // var session = HttpContext.Current.Session;
+                    // session["CustomerCarId"] = customerCar.CarId;
+                    return Ok(true);
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
             // return NotFound();
         }

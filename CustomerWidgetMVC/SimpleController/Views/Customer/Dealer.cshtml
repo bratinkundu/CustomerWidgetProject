@@ -54,7 +54,8 @@
 
             url: 'http://localhost:59699/api/GetDealerList?packageId=' +@PackageId,//+'packageName'+@PackageName,
             type: 'GET',
-            dataType: 'json',
+              dataType: 'json',
+              headers : { 'Authorization': `Bearer @Session["Token"]` },
 
             success: function (data, textStatus, xhr) {
               var dealerData = data;

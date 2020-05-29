@@ -17,6 +17,7 @@ namespace CustomerWidgetMVC.Controllers
 
         // GET: api/Customers
         [System.Web.Http.HttpPost]
+        [System.Web.Http.Authorize]
         public IHttpActionResult PostAppoinment(JObject data)
         {
             var serializer = new JsonSerializer();

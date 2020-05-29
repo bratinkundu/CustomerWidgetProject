@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -15,6 +16,7 @@ using System.Web.Mvc;
 using CustomerWidgetMVC.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SimpleController.Models;
 
 namespace CustomerWidgetMVC.Controllers
 {
@@ -22,60 +24,77 @@ namespace CustomerWidgetMVC.Controllers
     {
         private CustomerWidgetEntities db = new CustomerWidgetEntities();
 
-        [System.Web.Http.HttpGet]
-
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Authorize]
         [System.Web.Http.Route("api/GetAppointmentDetails")]
-        public IHttpActionResult GetSummary(int Dealerid, int CarId, int PackageId)//,DealerDate dealerDate)
+        public IHttpActionResult GetSummary(Summary summaryDetails)//,DealerDate dealerDate)
         {
-            var Data1 = (from customer in db.Customers
-                         join customercar in db.CustomerCars
-on customer.CustomerId equals customercar.CustomerId
-                         join car in db.Cars on customercar.CarId equals car.CarId
-                         where car.CarId == CarId
-                         select new
-                         {
-                             customer.FirstName,
-                             customer.LastName,
-                             customer.Address,
-                             customer.ContactNo,
-                             customer.Email,
-                             car.RegistrationNo,
-                             car.Model,
-                             car.BrandName
-                         }).ToList();
+            var identity = (ClaimsIdentity)User.Identity;
+            var name = identity.Name;
+            if (name.Equals(summaryDetails.Email, StringComparison.InvariantCultureIgnoreCase))
+            {
+                var Data1 = (from customer in db.Customers
+                             join customercar in db.CustomerCars
+    on customer.CustomerId equals customercar.CustomerId
+                             join car in db.Cars on customercar.CarId equals car.CarId
+                             where car.CarId == summaryDetails.CarId && customer.Email == summaryDetails.Email
 
-            var Data2 = (from dealer in db.Dealers
-                         join dealerservice in db.DealerServicePackages on dealer.DealerId equals dealerservice.DealerId
-                         join service in db.ServicePackages on dealerservice.ServiceId equals service.ServiceId
-                         where dealer.DealerId == Dealerid && dealerservice.ServiceId == PackageId
-                         select new
-                         {
-                             dealer.DealerName,
-                             dealer.ContactNo,
-                             dealer.Address,
-                             dealer.City,
-                             dealerservice.Price,
-                             dealerservice.Description,
-                             service.ServiceName
-                         }).ToList();
+                             select new
+                             {
+                                 customer.FirstName,
+                                 customer.LastName,
+                                 customer.Address,
+                                 customer.ContactNo,
+                                 customer.Email,
+                                 car.RegistrationNo,
+                                 car.Model,
+                                 car.BrandName
+                             }).ToList();
 
-            List<Object> Data = (from x in Data1 select (Object)x).ToList();
-            Data.AddRange((from x in Data2 select (Object)x).ToList());
-           // String hourMinute = DateTime.Now.ToString("HH:mm");
+                if(Data1.Count > 0) { 
+                var Data2 = (from dealer in db.Dealers
+                             join dealerservice in db.DealerServicePackages on dealer.DealerId equals dealerservice.DealerId
+                             join service in db.ServicePackages on dealerservice.ServiceId equals service.ServiceId
+                             where dealer.DealerId == summaryDetails.DealerId && dealerservice.ServiceId == summaryDetails.PackageId
+                             select new
+                             {
+                                 dealer.DealerName,
+                                 dealer.ContactNo,
+                                 dealer.Address,
+                                 dealer.City,
+                                 dealerservice.Price,
+                                 dealerservice.Description,
+                                 service.ServiceName
+                             }).ToList();
+
+                List<Object> Data = (from x in Data1 select (Object)x).ToList();
+                Data.AddRange((from x in Data2 select (Object)x).ToList());
+                // String hourMinute = DateTime.Now.ToString("HH:mm");
 
 
-            //var itemObject = (JsonConvert.SerializeObject(Data,
-            // Formatting.None,
-            // new JsonSerializerSettings()
-            // {
-            //     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            // }));
-            return Ok(Data);
-
+                //var itemObject = (JsonConvert.SerializeObject(Data,
+                // Formatting.None,
+                // new JsonSerializerSettings()
+                // {
+                //     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                // }));
+                return Ok(Data);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
+            return Content(HttpStatusCode.OK, "Success");
 
         }
 
         [System.Web.Http.HttpPost]
+        [System.Web.Http.Authorize]
         public IHttpActionResult PostSummary(JObject data)
 
         {

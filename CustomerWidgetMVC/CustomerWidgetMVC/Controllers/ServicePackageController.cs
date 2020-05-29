@@ -21,6 +21,7 @@ namespace CustomerWidgetMVC.Controllers
         //    public IQueryable<ServicePackage> GetServicePackages()
         //{
         [Route("api/GetServicePackage")]
+        [System.Web.Http.Authorize]
         public IHttpActionResult GetServicePackages()
         {
 
@@ -44,6 +45,7 @@ namespace CustomerWidgetMVC.Controllers
 
         // GET: api/ServicePackage/5
         [ResponseType(typeof(ServicePackage))]
+        [System.Web.Http.Authorize]
         public IHttpActionResult GetServicePackage(int id)
         {
             ServicePackage servicePackage = db.ServicePackages.Find(id);
@@ -83,7 +85,7 @@ namespace CustomerWidgetMVC.Controllers
                     return NotFound();
                 }
                 else
-                {
+                 {
                     throw;
                 }
             }

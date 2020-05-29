@@ -1,4 +1,4 @@
-
+﻿
 @model SimpleController.Models.ServicePackage
 
 @{
@@ -24,50 +24,128 @@
             <div class="card center" style="width: 18rem;" id="basic">
                 <img src="../assets/basic_service.png" class="card-img-top card_image" alt="...">
                 <div class="card-body center">
-                  <h5 class="card-title" id="sp1"></h5>
-                  <input type="text" id="spid1" hidden />
-                  <input type="text" id="s1" hidden />
+                    <h5 class="card-title" id="sp1"></h5>
+                    <input type="text" id="spid1" hidden />
+                    <input type="text" id="s1" hidden />
 
-                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                  @*<input type="radio" name="package" />*@
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    @*<input type="radio" name="package" />*@
                 </div>
             </div>
             <div class="card center" style="width: 18rem;" id="premium">
                 <img src="../assets/premium_service.png" class="card-img-top card_image" alt="...">
                 <div class="card-body center">
-                  <h5 class="card-title" id="sp2"></h5>
-                  <input type="text" id="spid2" hidden />
-                  <input type="text" id="s2" hidden />
-                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                  @*<input type="radio" name="package" />*@
+                    <h5 class="card-title" id="sp2"></h5>
+                    <input type="text" id="spid2" hidden />
+                    <input type="text" id="s2" hidden />
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    @*<input type="radio" name="package" />*@
                 </div>
             </div>
             <div class="card center" style="width: 18rem;" id="executive">
                 <img src="../assets/executive_service.png" class="card-img-top card_image" alt="...">
                 <div class="card-body center">
-                  <h5 class="card-title" id="sp3"></h5>
-                  <input type="text" id="spid3" hidden />
-                  <input type="text" id="s3" hidden />
-                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                  @*<input type="radio" name="package" />*@
+                    <h5 class="card-title" id="sp3"></h5>
+                    <input type="text" id="spid3" hidden />
+                    <input type="text" id="s3" hidden />
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    @*<input type="radio" name="package" />*@
                 </div>
             </div>
 
-      @{ 
-          var queryString = Request.QueryString["carid"];
-          Session["carid"] = queryString;
-      }
-      
-    </div>
+            @{
+                var queryString = Request.QueryString["carid"];
+                Session["carid"] = queryString;
+            }
 
-  </section>
+        </div>
 
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Scripts/Package.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //alert("fn called");
+            var token = "@Session["Token"]";
+            console.log(token);
+            debugger;
+            $.ajax({
+                url: 'http://localhost:59699/api/GetServicePackage',
+                type: 'GET',
+                headers : { 'Authorization': `Bearer @Session["Token"]` },
+                // contentType: "application/text; charset=utf-8",
+                dataType: 'json',
+                success: function (data) {
+                    console.log("............" + data + "...............");
+
+                    var serviceData = data;
+
+                    var id = new Array(serviceData.length);
+                    var name = new Array(serviceData.length);
+                    console.log(serviceData);
+                    for (var i = 0; i < serviceData.length; i++) {
+                        console.log(serviceData[i].ServiceId);
+                        console.log(serviceData[i].ServiceName);
+                        id[i] = serviceData[i].ServiceId;
+                        name[i] = serviceData[i].ServiceName;
+                        //
+                    }
+                    //for (var i = 0; i < data.length; i++) {
+                    //    console.log(id[i] + ":" + name[i])
+                    //}
+                    // console.log(name[0]);
+                    $('#spid1').val(id[0]);
+                    $('#spid2').val(id[1]);
+                    $('#spid3').val(id[2]);
+                    $('#sp1').append(name[0]);
+                    $('#sp2').append(name[1]);
+                    $('#sp3').append(name[2]);
+                    $('#s1').val(name[0]);
+                    $('#s2').val(name[1]);
+                    $('#s3').val(name[2]);
+
+                    //document.getElementById("bsp").value = name[0];
+                }
+                ////error: function (xhr, textStatus, errorThrown) {
+                ////    console.log('Error in Operation');
+                ////    alert("error");
+                ////}
+            });//ajax
+            var val;
+            $("#basic").click(function () {
+                val = document.getElementById('spid1').value;
+                // session["PackageName"] = Pname;
+                // console.log(session["PackageName"]);
+
+                Pname = document.getElementById('s1').value;
+
+                //alert("basic");
+                window.location.href = "../Customer/Dealer?packageid=" + val + "&type=" + Pname;
+
+            });
+            $("#premium").click(function () {
+                val = document.getElementById('spid2').value;
+                Pname = document.getElementById('s2').value;
+                //alert(val);
+                //alert("Premium");
+                window.location.href = "../Customer/Dealer?packageid=" + val + "&type=" + Pname;
+            });
+            $("#executive").click(function () {
+                val = document.getElementById('spid3').value;
+                Pname = document.getElementById('s3').value;
+                //alert(val);
+                //alert("Executive");
+                window.location.href = "../Customer/Dealer?packageid=" + val + "&type=" + Pname;
+            });
+
+        });
+    </script>
+    @*<script src="~/Scripts/Package.js"></script>*@
+
 
 </body>
 </html>

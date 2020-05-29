@@ -11,6 +11,10 @@ using Newtonsoft.Json;
 using SimpleController.Filter;
 using System.Net.Mail;
 using System.Net;
+using System.Net.Http.Formatting;
+using CustomerWidgetMVC.TokenbasedAuthentication;
+using System.Net.Http.Headers;
+using System.Security.Claims;
 
 namespace SimpleController.Controllers
 {
@@ -23,7 +27,8 @@ namespace SimpleController.Controllers
         }
         [HttpPost]
 
-        public ActionResult Register(FormCollection c, Customer customer)
+        ///public ActionResult Register(FormCollection c, Customer customer)
+            public ActionResult Register(FormCollection c, Customer customer)
         {
             customer.Password = c["passval"];
             customer.Email = c["Email"];
@@ -57,24 +62,44 @@ namespace SimpleController.Controllers
                             Session["Email"] = customer.Email;
                             Session["CustomerId"] = re.CustomerId;
                             Session["FirstName"] = re.FirstName;
-                           
 
+                            var form = new Dictionary<string, string>
+               {
+                   {"grant_type", "password"},
+                   {"username", customer.Email},
+                   {"password",  customer.Password},
+               };
+                            var tokenResponse = client.PostAsync("http://localhost:59699/oauth/token", new FormUrlEncodedContent(form)).Result;
+                            //var token = tokenResponse.Content.ReadAsStringAsync().Result;  
+                            var token = tokenResponse.Content.ReadAsAsync<Token>(new[] { new JsonMediaTypeFormatter() }).Result;
+                            if (string.IsNullOrEmpty(token.Error))
+                            {
+                                Session["Token"] = token.AccessToken;
+                              
+                            }
+                            else
+                            {
+                                Console.WriteLine("Error : {0}", token.Error);
+                            }
+                            // return true;
                             return RedirectToAction("CarList");
                         }
                         
                         else
                         {
                             ModelState.AddModelError("", "Please enter correct Email Id or Password");
-                            return View("Register");
+                             return View("Register");
+                           // return false;
                         }
                     }
                 }
                 else
                 {
+                   
                     return RedirectToAction("Register", "Customer");
                 }
             }
-            return View("Register");
+           return View("Register");
         }
 
         [customeFilter]

@@ -18,19 +18,21 @@ namespace CustomerWidgetMVC.Controllers
 
         // GET: api/Slots
         [HttpGet]
+        [System.Web.Http.Authorize]
 
         public IQueryable<Slot> GetSlots()
         {
             return db.Slots;
         }
+        [System.Web.Http.Authorize]
         [HttpGet]
         [System.Web.Http.Route("api/GetAvailableSlots")]
         // GET: api/Slots/5
         [ResponseType(typeof(Slot))]
-        public IHttpActionResult GetSlot(int id, DateTime date)//,DealerDate dealerDate)
+        public IHttpActionResult GetSlot(int DealerId, DateTime BookingDate)//,DealerDate dealerDate)
         {
             var slots = (from slot in db.Slots
-                         where slot.DealerId == id && slot.Date == date
+                         where slot.DealerId == DealerId && slot.Date == BookingDate
                          select new
                          {
                              slot.Date,
@@ -82,6 +84,7 @@ namespace CustomerWidgetMVC.Controllers
 
         // POST: api/Slots
         [ResponseType(typeof(Slot))]
+        [System.Web.Http.Authorize]
         public IHttpActionResult PostSlot(int dealerId)
         {
             var name = from dealer in db.Dealers

@@ -89,6 +89,7 @@
                         url: 'http://localhost:59699/api/Appoinment/PostAppoinment',
                         type: 'POST',
                         contentType: 'application/json',
+                        headers :{ 'Authorization': `Bearer @Session["Token"]` },
                         data: JSON.stringify(obj),
                         dataType:'json',
 

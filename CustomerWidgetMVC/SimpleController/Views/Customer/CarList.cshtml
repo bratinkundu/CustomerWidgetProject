@@ -87,11 +87,24 @@
 <script type="text/javascript">
     $(document).ready(function ()
     {
-        $.ajax({
-            url: 'http://localhost:59699/api/GetCarList?CustomerId='+@Session["CustomerId"],
-            type: 'GET',
-            dataType: 'json',
+        head = { 'Authorization': `Bearer @Session["Token"]` }
+        console.log("@Session["Token"]");
+        
 
+                var Obj = {
+                    RegistrationNo: "",
+                    BrandName: "",
+                    Model:"",
+                    Email: "@Session["Email"]"
+                };
+
+        $.ajax({
+            url: 'http://localhost:59699/api/GetCarList',
+            type: 'POST',
+            // dataType: 'json',
+            data: Obj,
+             headers: head,
+           // headers: {'Authorization': 'Bearer '+ @Session["Token"]},
             success: function (data, textStatus, xhr)
             {
               var cardata =data;
@@ -177,12 +190,14 @@
                     Model: $("#carName").val(),
                     Email: "@email"
                 };
-
+                head = { 'Authorization': `Bearer @Session["Token"]` }
                 $.ajax({
                     url: 'http://localhost:59699/api/RegisterCar/',
                     type: "POST",
                     data: carObj,
-                    dataType: "json",
+
+                     headers : head,
+                   // dataType: "json",
 
                     success: function (data)
                     {

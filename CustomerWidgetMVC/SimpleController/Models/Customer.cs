@@ -34,4 +34,11 @@ namespace SimpleController.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CustomerCar> CustomerCars { get; set; }
     }
+    public class userdetails
+    {
+
+        public string username { get; set; }
+        public string password { get; set; }
+        public string grant_type { get; set; }
+    }
 }

@@ -15,6 +15,7 @@ namespace CustomerWidgetMVC.Controllers
     private CustomerWidgetEntities db = new CustomerWidgetEntities();
 
         [System.Web.Http.Route("api/GetDealerList")]
+        [System.Web.Http.Authorize]
         public IHttpActionResult GetDealer(int packageId)
     {
       var dealerlist = (from dealer in db.Dealers

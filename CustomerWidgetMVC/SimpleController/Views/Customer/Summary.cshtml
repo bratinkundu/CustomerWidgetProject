@@ -91,16 +91,22 @@
             var date = dateObject[2];
             var month = (dateObject[1]);
             var year = dateObject[0];
-
+            var Obj = {
+                Email: "@Session["Email"]",
+                DealerId: @Session["dealerid"],
+                CarId: @Session["carid"],
+                PackageId: @Session["packageId"],
+                };
             datetime = (date + "/" + month + "/" + year);
             var time = "@Session["slotTime"]".slice(0, 5);
             
         $.ajax({
           url: 'http://localhost:59699/api/GetAppointmentDetails/',
-          type: 'GET',
-          data: {DealerId: @Session["dealerid"], CarId: @Session["carid"], PackageId: @Session["packageId"] },
+            type: 'POST',
+            headers : { 'Authorization': `Bearer @Session["Token"]` },
+          data: Obj,
           // contentType: "application/text; charset=utf-8",
-          dataType: 'json',
+          //dataType: 'json',
             success: function (data)
             {
             console.log("............" + data + "...............");
@@ -144,6 +150,7 @@
             type: "POST",
             contentType: 'application/json',
             data: JSON.stringify(obj),
+              headers : { 'Authorization': `Bearer @Session["Token"]` },
             dataType:'json',
 
 

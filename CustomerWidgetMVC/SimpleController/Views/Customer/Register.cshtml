@@ -45,6 +45,7 @@
                     @TempData["Errormsg"]
                     TempData.Keep("Errormsg");
                 }
+          
             }
         </p>*@
 
@@ -52,7 +53,7 @@
         @Html.HiddenFor(model => model.CustomerId)
 
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <form method="post" onsubmit="return login()">
+        <form method="post"   onsubmit="return login()">
 
             <div class="form-group">
                 <label for="exampleInputEmail1" class="required">Email address</label>
@@ -229,10 +230,11 @@ if (cookie != null)
 <script src="~/Scripts/bootstrap.min.js"></script>
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-<script src="~/Scripts/bootstrap.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
 <script src="~/Scripts/jquery.validate.min.js"></script>
 <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Scripts/bootstrap.js"></script>
 <script src="~/Scripts/RegisterValidation.js"></script>
 
 

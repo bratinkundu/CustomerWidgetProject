@@ -1,9 +1,13 @@
+ //<reference path="jquery-3.4.1.min.js" />   
 $(document).ready(function () {
     //alert("fn called");
+    var token = Session["Token"];
+    console.log(token);
     debugger;
     $.ajax({
         url: 'http://localhost:59699/api/GetServicePackage',
         type: 'GET',
+        headers: { 'Authorization': 'Bearer ' + 'Session["Token"]' },
        // contentType: "application/text; charset=utf-8",
         dataType: 'json',
         success: function (data) {

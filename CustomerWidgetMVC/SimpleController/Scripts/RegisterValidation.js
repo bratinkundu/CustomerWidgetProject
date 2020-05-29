@@ -309,28 +309,134 @@ function customValidate1() {
 
 function login() {
 
-    // alert("fn called");
     var res = customValidate1();
     if (res == false) {
         alert("Please fill the required fields.");
         return false;
     }
-    //if ($('#Email1').val().trim() == null && $('#Password1').val().trim() == null)
-    //{
-    //    alert("Enter Details");
-    //}
-    //var empObj = {
-    //    Email: $('#Email1').val(),
-    //    Password: CryptoJS.MD5($('#Password1').val()).toString()
-    //};
-
     document.getElementById("passval").value = CryptoJS.MD5($('#Password1').val()).toString();
-    document.getElementById("Email1").value();
+  document.getElementById("Email1").value();
     $('#Email1').val("");
     $('#Password1').val("");
 
+    var obj = {
+        username: $('#Email1').val(),
+        password: CryptoJS.MD5($('#Password1').val()).toString(),
+        grant_type : "password"
+
+    };
+
+    var loginobj = {
+        username: $('#Email1').val(),
+        password: CryptoJS.MD5($('#Password1').val()).toString()
+    };
+
+    //$.ajax({
+    //    // edit to add steve's suggestion.
+    //    //url: "/ControllerName/ActionName",
+       
+
+    //    //url: '<%= Url.Action("Register", "Customer") %>',
+    //    url:"/Customer/Register",
+    //    type: "POST",
+    //    data: JSON.stringify(loginobj),
+    //    success: function (data) {
+    //        alert("Hiiii");
+    //        $.ajax({
+    //            url: "http://localhost:59699/oauth/token",
+    //            type: "POST",
+    //            data: $.param({ grant_type: 'password', username: $('#Email1').val(), password: CryptoJS.MD5($('#Password1').val()).toString() }),
+    //            //contentType: "application/json;charset=utf-8",
+    //            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    //            success: function (resp) {
+    //                alert("In Success");
+    //                sessionStorage.setItem('userName', resp.username);
+    //                sessionStorage.setItem('accessToken', resp.access_token);
+    //                // var authHeaders = {};
+    //                //  authHeaders.Authorization = 'Bearer ' + resp.access_token;
+    //                var authHeaders = {};
+    //                authHeaders.Authorization = 'Bearer' + resp.access_token;
+    //                alert(resp.access_token);
+    //                console.log(resp.access_token)
+    //                window.location.href = '/Customer/CarList';
+
+    //            }
+    //        });
+       
+    //    },
+    //    complete: function () {
+          
+
+    //    }
+          
+    //        //alert(data);
+        
+    //});
+
     return true;
 }
+$('#btnSave').click(function (e) {
+    e.preventDefault();
+    debugger;
+    var res = customValidate1();
+    if (res == false) {
+        alert("Please fill the required fields.");
+        return false;
+    }
+    document.getElementById("passval").value = CryptoJS.MD5($('#Password1').val()).toString();
+    //document.getElementById("Email1").value();
+    // $('#Email1').val("");
+    //$('#Password1').val("");
+
+    var obj = {
+        username: $('#Email1').val(),
+        password: CryptoJS.MD5($('#Password1').val()).toString(),
+        grant_type: "password"
+
+    };
+
+    var loginobj = {
+        username: $('#Email1').val(),
+        password: CryptoJS.MD5($('#Password1').val()).toString()
+    };
+
+    $.ajax({
+        // edit to add steve's suggestion.
+        //url: "/ControllerName/ActionName",
+
+
+        //url: '<%= Url.Action("Register", "Customer") %>',
+        url: "/Customer/Register",
+        type: "POST",
+        data: JSON.stringify(loginobj),
+        success: function (data) { alert("Hiiii") },
+        complete: function () {
+            $.ajax({
+                url: "/TOKEN",
+                type: "POST",
+                data: JSON.stringify(obj),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                success: function (resp) {
+                    alert("In Success");
+                    sessionStorage.setItem('userName', resp.username);
+                    sessionStorage.setItem('accessToken', resp.access_token);
+                    // var authHeaders = {};
+                    //  authHeaders.Authorization = 'Bearer ' + resp.access_token;
+                    var authHeaders = {};
+                    authHeaders.Authorization = 'Bearer' + resp.access_token;
+                    alert(resp.access_token);
+
+                }
+            });
+        }
+
+        //alert(data);
+
+    });
+
+    return true;
+    
+})
 
 
 
@@ -356,4 +462,4 @@ function login() {
 
 
 
-
+    
